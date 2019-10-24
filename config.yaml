@@ -1,0 +1,57 @@
+---
+
+database:
+  engine: "sqlite:////tmp/foo.sql"
+  echo: true
+
+
+auth:
+  - user: admin
+    pass: 123qwe
+  - user: cyrillvw
+    pass: 123qwe
+
+storage:
+  path: ./data
+
+
+# DO NOT CHANGE after setup or BAD things will happen
+schema:
+  - name: photos
+    spec:
+      - name: digi
+        type: string
+        searchable: true
+      - name: zusatz
+        type: string
+        searchable: true
+      - name: signatur
+        type: string
+        searchable: true
+      - name: signatur2
+        type: string
+        searchable: true
+      - name: titel
+        type: string
+        searchable: true
+      - name: beschreibung
+        type: string
+        searchable: true
+      - name: kontaktabzug
+        type: string
+        searchable: true
+      - name: format
+        type: string
+        searchable: true
+      - name: datierung
+        type: string
+        searchable: true
+      - name: bemerkungen
+        type: string
+        searchable: true
+      - name: bearbeiterin
+        type: string
+        searchable: true
+
+    settings:
+      fileregex: photos/{signatur}.jpg
