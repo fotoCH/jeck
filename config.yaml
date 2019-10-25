@@ -1,57 +1,174 @@
 ---
 
 database:
-  engine: "sqlite:////tmp/foo.sql"
+  engine: "sqlite:////home/eni/code/foto-ch/testdb.sql"
   echo: true
 
 
 auth:
-  - user: admin
-    pass: 123qwe
-  - user: cyrillvw
-    pass: 123qwe
+  enable: True
+  secret: kusagfh89wqkjsdhfsaldkfhsefkjhsdkjh
+  users:
+    - user: admin
+      pass: 123qwe
+    - user: cyrillvw
+      pass: 123qwe
 
 storage:
-  path: ./data
+  path: ../../flaskyphoto-data/
+  storage-url: http://localhost:5001/
 
 
-# DO NOT CHANGE after setup or BAD things will happen
+# DO NOT CHANGE types or add enries after setup or BAD things will happen
 schema:
   - name: photos
     spec:
-      - name: digi
+
+      - name: dc_creator
         type: string
-        searchable: true
-      - name: zusatz
+        desc: ID Fotograf
+        searchable: false
+
+      - name: dc_created
         type: string
-        searchable: true
-      - name: signatur
+        desc: Datum
+        searchable: false
+
+      - name: dc_title
         type: string
-        searchable: true
-      - name: signatur2
-        type: string
-        searchable: true
-      - name: titel
-        type: string
-        searchable: true
-      - name: beschreibung
-        type: string
-        searchable: true
-      - name: kontaktabzug
-        type: string
-        searchable: true
-      - name: format
-        type: string
-        searchable: true
-      - name: datierung
-        type: string
-        searchable: true
-      - name: bemerkungen
-        type: string
-        searchable: true
-      - name: bearbeiterin
-        type: string
+        desc: Titel
         searchable: true
 
+      - name: dc_description
+        type: string
+        desc: Beschreibung
+        searchable: true
+
+      - name: dc_identifier
+        type: string
+        desc: Link zum Bild im Originalkontext
+        searchable: false
+
+      - name: dc_right
+        type: string
+        desc: Rechteinhaber
+        searchable: false
+
+      - name: dc_coverage
+        type: string
+        desc: Abdeckung (?)
+        searchable: false
+
+      - name: dcterms_ispart_of
+        type: string
+        desc: Bestand ID fotoCH
+        searchable: false
+
+      - name: dcterms_medium
+        type: string
+        desc: Bildträger, Masse
+        searchable: false
+
+      - name: dcterms_spatial
+        type: string
+        desc: Ortsbezeichnung
+        searchable: true
+
+      - name: dcterms_subject
+        type: string
+        desc: Deskriptoren
+        searchable: true
+
+      - name: edm_dataprovider
+        type: string
+        desc: Institution ID
+        searchable: false
+
+      - name: image_path
+        type: string
+        desc: Pfad zu Bild auf Server
+        searchable: false
+
+      - name: all
+        type: string
+        desc: Hilfsfeld für die eingabe ganzer Datensätze
+        searchable: false
+
+      - name: dc_created_bis
+        type: string
+        desc: Datum bis
+        searchable: true
+
+      - name: supplier_id
+        type: string
+        desc: Name Digitalisat
+        searchable: false
+
+      - name: zeitraum
+        type: string
+        desc: Datum als Text
+        searchable: true
+
+      - name: lon
+        type: string
+        desc: Geographische Breite
+        searchable: false
+
+      - name: lat
+        type: string
+        desc: Geographische Länge
+        searchable: false
+
+      - name: google_revcode
+        type: string
+        desc: Google code
+        searchable: false
+
+      - name: edm_license
+        type: string
+        desc: Rechtslizenz des Bildes
+        searchable: true
+
+      - name: edm_watermark
+        type: string
+        desc: Wasserzeichen der Institution
+        searchable: false
+
+      - name: edm_order
+        type: string
+        desc: Bestelladresse
+        searchable: false
+
+      - name: url_wikimedia
+        type: string
+        desc: URL zu Wikimedia
+        searchable: false
+
+      - name: edm_notes
+        type: string
+        desc: Bemerkungen
+        searchable: true
+
+      - name: edm_condition
+        type: string
+        desc: Zustand Bildträger
+        searchable: false
+
+      - name: edm_author
+        type: string
+        desc: Verfasser Liste
+        searchable: false
+
+      - name: edm_editing_date
+        type: string
+        desc: Datum
+        searchable: false
+
+      - name: dc_creator_text
+        type: string
+        desc: Name Fotograf
+        searchable: true
+
+
     settings:
-      fileregex: photos/{signatur}.jpg
+      fileregex: "{image_path}"

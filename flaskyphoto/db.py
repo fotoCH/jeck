@@ -142,10 +142,15 @@ class Database:
         return res
 
 
-    def get_whole_table(self, table):
-        return self.query_to_list(
-            self.session.query(self.tables[table]).all()
-        )
+    def get_whole_table(self, table, page=False, page_size=False):
+        res = self.session.query(self.tables[table])
+        if page:
+            res, pagination = sqlalchemy_filters.apply_pagination(
+                res,
+                page_number=int(page),
+                page_size=int(page_size)
+            )
+        return self.query_to_list( res.all() )
 
 
     def get_unique_field_values(self, table, field):
@@ -162,7 +167,7 @@ class Database:
 
 
     # search stuff
-    def full_search(self, table, query):
+    def full_search(self, table, query, page=False, page_size=False):
         filters = []
         for item in self.spec[table]:
             if item['searchable']:
@@ -173,16 +178,27 @@ class Database:
                 })
         filter_spec = [ { "or": filters } ]
 
-        items = sqlalchemy_filters.apply_filters(
-            self.session.query(self.tables[table]), filter_spec).all()
+        res = sqlalchemy_filters.apply_filters(
+            self.session.query(self.tables[table]), filter_spec)
 
-        return self.query_to_list(items)
+        if page:
+            res, pagination = sqlalchemy_filters.apply_pagination(
+                res,
+                page_number=int(page),
+                page_size=int(page_size)
+            )
+        return self.query_to_list(res.all())
 
 
-    def filter(self, table, filter_spec):
+    def filter(self, table, filter_spec, page=False, page_size=False):
         try:
-            items = sqlalchemy_filters.apply_filters(
+            res = sqlalchemy_filters.apply_filters(
                 self.session.query(self.tables[table]), filter_spec).all()
-            return self.query_to_list(items)
+            res, pagination = sqlalchemy_filters.apply_pagination(
+                res,
+                page_number=int(page),
+                page_size=int(page_size)
+            )
+            return self.query_to_list(res.all())
         except:
             return []

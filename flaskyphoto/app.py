@@ -1,35 +1,65 @@
 #!/usr/bin/env python3
 
-
+import os
+import glob
 import flask
+import functools
 import flask_restplus
 
 from flask_jwt import JWT, jwt_required, current_identity
 
 from . import db as db_base
 from . import helpers
-
+from . import auth
 
 from pprint import pprint
 
 # init app and database
+global config
 config = helpers.load_config()
 
-#
-# def authenticate(username, password):
-#     print(username, password)
-#     pass
-#
-# def identity(payload):
-#     print(payload)
-#     pass
+
+# add file entrys
+# TODO: move to own file/class
+config_tables = {}
+for table in config['schema']:
+    config_tables[table['name']] = table
+
+
+def add_file_entry(tablename, entry):
+    glob_str = os.path.join(
+        os.path.realpath( config['storage']['path'] ),
+        config_tables[tablename]['settings']['fileregex'].format(**entry)
+    )
+    glob_res = glob.glob(glob_str)
+    files = []
+    for file in glob_res:
+        dpath = os.path.relpath(
+            file,
+            config['storage']['path']
+        )
+        files.append("{0}{1}".format(
+            config['storage']['storage-url'],
+            dpath
+        ))
+    entry['files'] = files
+    return entry
+
+
+def add_file_entry_list(tablename, entrys):
+    res = []
+    for entry in entrys:
+        res.append(
+            add_file_entry(tablename, entry)
+        )
+    return res
+
 
 
 db = db_base.Database(config)
 db.init()
 db.commit()
 app = flask.Flask(__name__)
-
 
 api = flask_restplus.Api(
     app,
@@ -39,8 +69,36 @@ api = flask_restplus.Api(
 )
 
 
-#jwt = JWT(app, authenticate, identity)
+#fix CORS stuff
+@app.after_request
+def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = '*'
+    return response
 
+
+# JWT authentication
+if config['auth']['enable']:
+    auth.init_auth(config)
+    app.config['PROPAGATE_EXCEPTIONS'] = True
+    app.config['SECRET_KEY'] = config['auth']['secret']
+    jwt = JWT(app, auth.authenticate, auth.identity)
+else:
+    # override jwt_required if auth is disabled
+    def jwt_required(realm=None):
+        def wrapper(fn):
+            @functools.wraps(fn)
+            def decorator(*args, **kwargs):
+                return fn(*args, **kwargs)
+            return decorator
+        return wrapper
+
+
+
+
+#
+# The API itself
+#
 
 @api.route('/list')
 class ListTables(flask_restplus.Resource):
@@ -60,13 +118,19 @@ class ListSchema(flask_restplus.Resource):
 
 
 @api.route('/<string:tablename>')
+@api.doc(params={'page': 'Page number (optional)'})
+@api.doc(params={'page_size': 'Page size. If page is specified and page_number empty, it will be set to 30'})
 @api.doc(responses={200: 'Success'})
 @api.doc(responses={404: 'Table not found'})
 class TableActions(flask_restplus.Resource):
     def get(self, tablename):
         """ Get content of whole table """
         if db.spec.get(tablename):
-            return db.get_whole_table(tablename)
+            page = flask.request.args.get('page', False)
+            page_size = flask.request.args.get('page_size', 30)
+            return add_file_entry_list(
+                tablename, db.get_whole_table(tablename, page=page, page_size=page_size)
+            )
         return {"message":"cannot find table with the name provided"}, 404
 
     @api.doc(responses={403: 'Not Authorized'})
@@ -94,7 +158,7 @@ class EntryActions(flask_restplus.Resource):
         if db.spec.get(tablename):
             res = db.get_item(tablename, itemid)
             if res:
-                return res
+                return add_file_entry(tablename, res)
         return {"message":"cannot find item with the id provided"}, 404
 
     @api.doc(responses={403: 'Not Authorized'})
@@ -107,6 +171,7 @@ class EntryActions(flask_restplus.Resource):
             return 200
         return {"message":"cannot find item with the id provided"}, 404
 
+    @jwt_required()
     @api.doc(responses={403: 'Not Authorized'})
     def delete(self, tablename, itemid):
         """ Delete entry """
@@ -136,6 +201,8 @@ class FieldActions(flask_restplus.Resource):
 
 @api.route('/<string:tablename>/search')
 @api.doc(params={'query': 'Search query'})
+@api.doc(params={'page': 'Page number (optional)'})
+@api.doc(params={'page_size': 'Page size. If page is specified and page_number empty, it will be set to 30'})
 @api.doc(responses={404: 'Table not found'})
 @api.doc(responses={200: 'Success'})
 class SearchActions(flask_restplus.Resource):
@@ -143,19 +210,24 @@ class SearchActions(flask_restplus.Resource):
         """ Search an entry in given table """
         if db.spec.get(tablename):
             query = flask.request.args.get('query')
-            res = db.full_search(tablename, query)
-            return res
+            page = flask.request.args.get('page', False)
+            page_size = flask.request.args.get('page_size', 30)
+            res = db.full_search(tablename, query, page=page, page_size=page_size)
+            return add_file_entry_list(tablename, res)
         return {"message":"cannot find table with the name provided"}, 404
 
 
 @api.route('/<string:tablename>/filter')
 @api.doc(responses={404: 'Table not found'})
 @api.doc(responses={200: 'Success'})
+@api.doc(params={'page': 'Page number (optional)'})
+@api.doc(params={'page_size': 'Page size. If page is specified and page_number empty, it will be set to 30'})
 class FilterActions(flask_restplus.Resource):
     def post(self, tablename):
         """
         Apply given filter on table
-        Filter spec can be found here: https://pypi.org/project/sqlalchemy-filters
+        Filter spec can be found here: https://github.com/juliotrigo/sqlalchemy-filters#filters-format
+        Please note that you cannot specify an model, since this is controlled over tablename
         Input is JSON:
         ```json
         { filter: ["your filters here"] }
@@ -163,5 +235,10 @@ class FilterActions(flask_restplus.Resource):
         """
         if db.spec.get(tablename) and flask.request.is_json:
             filter_spec = flask.request.get_json()['filter']
-            return db.filter(tablename, filter_spec)
+            page = flask.request.args.get('page', False)
+            page_size = flask.request.args.get('page_size', 30)
+            return add_file_entry_list(
+                tablename,
+                db.filter(tablename, filter_spec, page=page, page_size=page_size)
+            )
         return {"message":"cannot find table with the name provided"}, 404
