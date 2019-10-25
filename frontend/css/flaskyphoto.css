@@ -1,0 +1,13 @@
+div.photo-entry {
+  float: left;
+  width: 170px;
+  height: 200px;
+  font-size: 80%;
+  margin-right: 20px;
+  margin-bottom: 10px;
+}
+
+div.photo-entry > img {
+  width: 170px;
+  height: 170px;
+}
