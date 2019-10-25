@@ -2,8 +2,10 @@
 
 import os
 import glob
-import flask
 import functools
+import datetime
+
+import flask
 import flask_restplus
 
 from flask_jwt import JWT, jwt_required, current_identity
@@ -11,56 +13,27 @@ from flask_jwt import JWT, jwt_required, current_identity
 from . import db as db_base
 from . import helpers
 from . import auth
+from . import addfile
+
 
 from pprint import pprint
 
-# init app and database
-global config
+
+
+# Init app and database
 config = helpers.load_config()
 
+# Init fileadder class
+fileadder = addfile.ItemFileAdder(config)
 
-# add file entrys
-# TODO: move to own file/class
-config_tables = {}
-for table in config['schema']:
-    config_tables[table['name']] = table
-
-
-def add_file_entry(tablename, entry):
-    glob_str = os.path.join(
-        os.path.realpath( config['storage']['path'] ),
-        config_tables[tablename]['settings']['fileregex'].format(**entry)
-    )
-    glob_res = glob.glob(glob_str)
-    files = []
-    for file in glob_res:
-        dpath = os.path.relpath(
-            file,
-            config['storage']['path']
-        )
-        files.append("{0}{1}".format(
-            config['storage']['storage-url'],
-            dpath
-        ))
-    entry['files'] = files
-    return entry
-
-
-def add_file_entry_list(tablename, entrys):
-    res = []
-    for entry in entrys:
-        res.append(
-            add_file_entry(tablename, entry)
-        )
-    return res
-
-
-
+# Init Database
 db = db_base.Database(config)
 db.init()
 db.commit()
-app = flask.Flask(__name__)
 
+
+# app & API
+app = flask.Flask(__name__)
 api = flask_restplus.Api(
     app,
     version='1.0',
@@ -69,22 +42,18 @@ api = flask_restplus.Api(
 )
 
 
-#fix CORS stuff
-@app.after_request
-def after_request(response):
-    header = response.headers
-    header['Access-Control-Allow-Origin'] = '*'
-    return response
-
-
 # JWT authentication
 if config['auth']['enable']:
     auth.init_auth(config)
     app.config['PROPAGATE_EXCEPTIONS'] = True
     app.config['SECRET_KEY'] = config['auth']['secret']
+    app.config['JWT_EXPIRATION_DELTA'] = datetime.timedelta(
+        seconds=int(config['auth']['token_valid_for'])
+    )
     jwt = JWT(app, auth.authenticate, auth.identity)
 else:
     # override jwt_required if auth is disabled
+    # sorry for uglyness
     def jwt_required(realm=None):
         def wrapper(fn):
             @functools.wraps(fn)
@@ -93,6 +62,14 @@ else:
             return decorator
         return wrapper
 
+
+
+#fix CORS stuff
+@app.after_request
+def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = '*'
+    return response
 
 
 
@@ -128,12 +105,13 @@ class TableActions(flask_restplus.Resource):
         if db.spec.get(tablename):
             page = flask.request.args.get('page', False)
             page_size = flask.request.args.get('page_size', 30)
-            return add_file_entry_list(
+            return fileadder.list(
                 tablename, db.get_whole_table(tablename, page=page, page_size=page_size)
             )
         return {"message":"cannot find table with the name provided"}, 404
 
-    @api.doc(responses={403: 'Not Authorized'})
+    @jwt_required()
+    @api.doc(responses={401: 'Not Authorized'})
     def post(self, tablename):
         """
         Create new entry
@@ -158,10 +136,11 @@ class EntryActions(flask_restplus.Resource):
         if db.spec.get(tablename):
             res = db.get_item(tablename, itemid)
             if res:
-                return add_file_entry(tablename, res)
+                return fileadder.single(tablename, res)
         return {"message":"cannot find item with the id provided"}, 404
 
-    @api.doc(responses={403: 'Not Authorized'})
+    @jwt_required()
+    @api.doc(responses={401: 'Not Authorized'})
     def put(self, tablename, itemid):
         """ Update entry """
         if flask.request.is_json and db.spec.get(tablename):
@@ -172,7 +151,7 @@ class EntryActions(flask_restplus.Resource):
         return {"message":"cannot find item with the id provided"}, 404
 
     @jwt_required()
-    @api.doc(responses={403: 'Not Authorized'})
+    @api.doc(responses={401: 'Not Authorized'})
     def delete(self, tablename, itemid):
         """ Delete entry """
         if db.spec.get(tablename):
@@ -213,7 +192,7 @@ class SearchActions(flask_restplus.Resource):
             page = flask.request.args.get('page', False)
             page_size = flask.request.args.get('page_size', 30)
             res = db.full_search(tablename, query, page=page, page_size=page_size)
-            return add_file_entry_list(tablename, res)
+            return fileadder.list(tablename, res)
         return {"message":"cannot find table with the name provided"}, 404
 
 
@@ -237,7 +216,7 @@ class FilterActions(flask_restplus.Resource):
             filter_spec = flask.request.get_json()['filter']
             page = flask.request.args.get('page', False)
             page_size = flask.request.args.get('page_size', 30)
-            return add_file_entry_list(
+            return fileadder.list(
                 tablename,
                 db.filter(tablename, filter_spec, page=page, page_size=page_size)
             )

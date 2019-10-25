@@ -14,7 +14,7 @@ class AuthUser(object):
         return "AuthUser(id='%s')" % self.id
 
 
-uid_counter = 0
+uid_counter = 1
 username_table = {}
 userid_table = {}
 
