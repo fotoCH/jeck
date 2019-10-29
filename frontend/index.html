@@ -12,14 +12,21 @@
 		<link rel="stylesheet" href="css/ionicons.min.css">
 		<link rel="stylesheet" href="css/pace.css">
 	  <link rel="stylesheet" href="css/custom.css">
+
  		<link rel="stylesheet" href="css/flaskyphoto.css">
+
+		<script src="js/slimselect.min.js"></script>
+		<link href="css/slimselect.css" rel="stylesheet"></link>
 
 	    <!-- js -->
 	    <script src="js/jquery-2.1.3.min.js"></script>
 	    <script src="js/bootstrap.min.js"></script>
 	    <script src="js/pace.min.js"></script>
 	    <script src="js/modernizr.custom.js"></script>
+
 			<script src="js/flaskyphoto.js"></script>
+
+
 	</head>
 
 	<body>
@@ -68,20 +75,30 @@
 						</div>
 						<div class="widget widget-recent-posts">
 							<h3 class="widget-title">Erweiterte Filter</h3>
-							<ul>
-								<li>
-									<a href="#">Ausklappen</a>
-								</li>
-							</ul>
+							<div id="filterarea"></div>
 						</div>
 					</aside>
 
 
 					<main class="col-md-9">
 						<article class="post post-1">
-							<div class="entry-content clearfix" id="photoarea"></div>
-						</article>
 
+							<div class="photo-detail" id="photo-detail">
+								<div class="img">
+									<img src="http://localhost:5001/images/hunziker/Hunziker_AV_0066_001.jpg" />
+								</div>
+								<div class="text">
+									Titel: <b>Foobar</b><br>
+									Fotograf: <b>Foobar</b><br>
+									Jahr: <b>Foobar</b><br>
+									Blah: <b>Foobar</b><br>
+									Blah: <b>Foobar</b><br>
+								</div>
+							</div>
+
+							<div class="entry-content clearfix" id="photoarea"></div>
+
+						</article>
 					</main>
 
 				</div>
@@ -109,6 +126,7 @@
 				</ul>
 			</nav>
 		</div>
+
 
 		<script src="js/script.js"></script>
 

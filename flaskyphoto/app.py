@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import os
-import glob
 import functools
 import datetime
 
@@ -69,6 +67,7 @@ else:
 def after_request(response):
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
+    header['Access-Control-Allow-Headers']= 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers'
     return response
 
 
@@ -174,7 +173,9 @@ class FieldActions(flask_restplus.Resource):
     def get(self, tablename, fieldname):
         """ Get unique field values for a given field """
         if db.spec.get(tablename):
-            return db.get_unique_field_values(tablename, fieldname)
+            res = db.get_unique_field_values(tablename, fieldname)
+            res.sort()
+            return res
         return {"message":"cannot find table with the name provided"}, 404
 
 
@@ -196,6 +197,28 @@ class SearchActions(flask_restplus.Resource):
         return {"message":"cannot find table with the name provided"}, 404
 
 
+
+@api.route('/<string:tablename>/filter-spec')
+@api.doc(responses={404: 'Table not found'})
+@api.doc(responses={200: 'Success'})
+class FilterActions(flask_restplus.Resource):
+    def get(self, tablename):
+        """
+        Build data array for possible filters
+        """
+        if db.spec.get(tablename):
+            res = []
+            for item in db.spec.get(tablename):
+                if item['searchable']:
+                    item['data'] = db.get_unique_field_values(tablename, item['name'])
+                    if item['data']:
+                        item['data'].sort()
+                        res.append(item)
+            return res
+        return {"message":"cannot find table with the name provided"}, 404
+
+
+
 @api.route('/<string:tablename>/filter')
 @api.doc(responses={404: 'Table not found'})
 @api.doc(responses={200: 'Success'})
@@ -214,6 +237,7 @@ class FilterActions(flask_restplus.Resource):
         """
         if db.spec.get(tablename) and flask.request.is_json:
             filter_spec = flask.request.get_json()['filter']
+            print(filter_spec)
             page = flask.request.args.get('page', False)
             page_size = flask.request.args.get('page_size', 30)
             return fileadder.list(

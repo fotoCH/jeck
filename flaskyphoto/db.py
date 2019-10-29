@@ -153,7 +153,7 @@ class Database:
         return self.query_to_list( res.all() )
 
 
-    def get_unique_field_values(self, table, field):
+    def get_unique_field_values(self, table, field, no_empty=True):
         res = []
         try:
             r = self.session.query(self.tables[table].__table__.c[field]).distinct()
@@ -162,6 +162,9 @@ class Database:
                 res = []
         except KeyError:
             pass
+        if no_empty:
+            res = [x for x in res if x]
+
         return res
 
 
@@ -193,12 +196,13 @@ class Database:
     def filter(self, table, filter_spec, page=False, page_size=False):
         try:
             res = sqlalchemy_filters.apply_filters(
-                self.session.query(self.tables[table]), filter_spec).all()
-            res, pagination = sqlalchemy_filters.apply_pagination(
-                res,
-                page_number=int(page),
-                page_size=int(page_size)
-            )
+                self.session.query(self.tables[table]), filter_spec)
+            if page:
+                res, pagination = sqlalchemy_filters.apply_pagination(
+                    res,
+                    page_number=int(page),
+                    page_size=int(page_size)
+                )
             return self.query_to_list(res.all())
         except:
             return []

@@ -1,7 +1,7 @@
 ---
 
 database:
-  engine: "sqlite:////home/eni/code/foto-ch/testdb.sql"
+  engine: "sqlite:////home/eni/code/foto-ch/testdb.sql?check_same_thread=false"
   echo: true
 
 
