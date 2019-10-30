@@ -5,7 +5,7 @@
 
 
 const api_url = "http://localhost:5000/"
-const table = "photo"
+const api_table = "photos"
 
 current_page = 1;
 is_search = false;
@@ -16,32 +16,32 @@ gallery_is_open = false;
 gallery_curr_id = 0;
 
 
+
+// rebuild list of photos from a given data array
 update_photos = function(data, append=false){
-  elem = $("#photoarea")
+  var elem = $("#photoarea");
+  var tpl = $("#elem-tpl-area > div.photo-entry");
   if (!append){
     elem.html("")
   }
-  content = ""
   for (entry of data) {
-    content = content + '<div class="photo-entry" data-id="'+entry.id+
-      '"><img src="' +
-      entry.files[0] +
-      '"></img>Titel: <b>' +
-      entry.dc_title+ '</b></div>'
+    var imgentry = tpl.clone();
+    imgentry.attr("data-id", entry.id);
+    imgentry.children(".photo-entry-img").attr("src", entry.files[0]);
+    imgentry.children(".photo-entry-txt").html(entry.dc_title);
+    if (append){
+      elem.append(imgentry);
+    }
+    else {
+      gallery_move_detail();
+      elem.html(imgentry);
+    }
   }
-  if (append){
-    elem.append(content);
-  }
-  else {
-    $("#photo-detail").detach().insertAfter($("body"));
-    elem.html(content);
-  }
-  // gallery event
+  // gallery bind events to open details
   $("#photoarea > div.photo-entry").unbind("click");
   $("#photoarea > div.photo-entry").click(function(){
     open_gallery_photo($(this));
   });
-
 }
 
 
@@ -76,14 +76,19 @@ open_gallery_photo = function(elem){
         }
       }
     }
-    $("#photo-detail").detach().insertAfter(prev).css({"display":"inline-block"});
+    $("#photo-detail").detach().insertAfter(prev);
     $.ajax({
       dataType: "json",
-      url: "http://localhost:5000/photos/"+gallery_curr_id
+      url: api_url + api_table + "/" + gallery_curr_id
     }).done(function(data){
       $("#photo-detail").children("div.img").children("img").attr("src", data.files[0])
       $("html, body").scrollTop( $('#photo-detail').offset().top-10 );
-
+      // TODO: fill out all elems
+      $("#photo-detail-title").html(data.dc_title);
+      $("#photo-detail-photographer").html(data.dc_creator_text);
+      $("#photo-detail-year").html(data.zeitraum);
+      $("#photo-detail-spatial").html(data.dcterms_spatial);
+      $("#photo-detail-right").html(data.dc_right);
     });
 };
 
@@ -114,6 +119,11 @@ gallery_prev_photo = function(){
 }
 
 
+// move photo detail out of body
+gallery_move_detail = function(){
+  $("#photo-detail").detach().appendTo($("#elem-tpl-area"));
+};
+
 
 // this function gets called on infinite scroll
 load_next_page = function(){
@@ -123,13 +133,13 @@ load_next_page = function(){
   if (is_search){
     console.log("load next search page")
     if (current_page==1){
-      $("#photo-detail").detach().insertAfter($("body"));
+      gallery_move_detail();
       $("#photoarea").html("");
     }
     query = $("#search-term").val();
     $.ajax({
       dataType: "json",
-      url: "http://localhost:5000/photos/search?query="+query+"&page="+current_page+"&page_size=32"
+      url: api_url + api_table + "/search?query="+query+"&page="+current_page+"&page_size=32"
     }).done(function(data){
       update_photos(data, true);
     });
@@ -138,12 +148,12 @@ load_next_page = function(){
   // filter updated
   else if (is_filter){
     if (current_page==1){
-      $("#photo-detail").detach().insertAfter($("body"));
+      gallery_move_detail();
       $("#photoarea").html("");
     }
     $.ajax({
       dataType: "json",
-      url: "http://localhost:5000/photos/filter?page="+current_page+"&page_size=32",
+      url: api_url + api_table + "/filter?page="+current_page+"&page_size=32",
       type: "POST",
       contentType: 'application/json',
       data: JSON.stringify({ "filter": filter_spec })
@@ -156,12 +166,46 @@ load_next_page = function(){
   else {
     $.ajax({
       dataType: "json",
-      url: "http://localhost:5000/photos?page="+current_page+"&page_size=32"
+      url: api_url + api_table + "?page="+current_page+"&page_size=32"
     }).done(function(data){
       update_photos(data, true);
     });
   }
 
+};
+
+
+// builds filter ui according to API specs
+build_filter_list = function(){
+  $.ajax({
+    dataType: "json",
+    url: api_url + api_table + "/filter-spec"
+  }).done(function(data){
+    filter_items = [];
+    var tpl = $("#elem-tpl-area > div.filter-item-tpl");
+    for (item of data){
+      var filterentry = $(tpl).clone();
+      filterentry.children(".filter-item-desc").html(item.desc);
+      filterentry.children(".filter-item-select").attr("id", "filter-"+item.name);
+      var sel_entry = filterentry.children(".filter-item-select").children(".filter-item-entry")
+      sel_entry.detach();
+      for (entry of item.data){
+        var itm = sel_entry.clone().attr("value",entry).html(entry);
+        filterentry.children(".filter-item-select").append(itm)
+      }
+      $("#filterarea").append(filterentry);
+      new SlimSelect({
+        select: '#filter-'+item.name
+      });
+      $('#filter-'+item.name).change(function(itm){
+        update_filters();
+      });
+      filter_items.push({
+        'selector': '#filter-'+item.name,
+        'obj': item
+      });
+    }
+  });
 };
 
 
@@ -185,6 +229,7 @@ update_filters = function(){
 
 
 
+// main init function
 $(document).ready(function(){
 
   // search function handler
@@ -195,7 +240,11 @@ $(document).ready(function(){
     evt.preventDefault();
   });
 
+  // load photos
   load_next_page();
+
+  // build filter list
+  build_filter_list();
 
   // infinite scroll loader
   $(window).scroll(function() {
@@ -205,13 +254,11 @@ $(document).ready(function(){
      }
   });
 
-
   // event binding for left-right keys if gallery is open
   $(document).keydown(function(e) {
     if (!gallery_is_open){
       return;
     }
-    console.log("keyevent", e, gallery_is_open);
     switch(e.which) {
       case 37: // left
         gallery_prev_photo();
@@ -222,34 +269,6 @@ $(document).ready(function(){
       default: return;
     }
     e.preventDefault();
-  });
-
-
-  // build filters list
-  $.ajax({
-    dataType: "json",
-    url: "http://localhost:5000/photos/filter-spec"
-  }).done(function(data){
-    filter_items = []
-    for (item of data){
-      sel ="<b>"+item.desc+"</b>";
-      sel+= "<select id='filter-"+item.name+"' multiple>";
-      for (entry of item.data){
-        sel+="<option value='"+entry+"'>"+entry+"</option>";
-      }
-      sel+="</select>";
-      $("#filterarea").append(sel);
-      new SlimSelect({
-        select: '#filter-'+item.name
-      });
-      $('#filter-'+item.name).change(function(itm){
-        update_filters();
-      });
-      filter_items.push({
-        'selector': '#filter-'+item.name,
-        'obj': item
-      });
-    }
   });
 
 });

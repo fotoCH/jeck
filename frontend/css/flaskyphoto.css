@@ -21,7 +21,6 @@ div.photo-entry > img {
 /* photo opened */
 div.photo-detail {
   display: inline-block;
-  display: none;
   float: left;
   width: 100%;
   margin-left: -20px;
@@ -65,4 +64,10 @@ div.filter-item input {
 
 div.ss-multi-selected {
   margin-bottom: 10px;
+}
+
+
+/* template area */
+#elem-tpl-area {
+  display: none !important;
 }

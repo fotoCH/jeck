@@ -83,19 +83,6 @@
 					<main class="col-md-9">
 						<article class="post post-1">
 
-							<div class="photo-detail" id="photo-detail">
-								<div class="img">
-									<img src="http://localhost:5001/images/hunziker/Hunziker_AV_0066_001.jpg" />
-								</div>
-								<div class="text">
-									Titel: <b>Foobar</b><br>
-									Fotograf: <b>Foobar</b><br>
-									Jahr: <b>Foobar</b><br>
-									Blah: <b>Foobar</b><br>
-									Blah: <b>Foobar</b><br>
-								</div>
-							</div>
-
 							<div class="entry-content clearfix" id="photoarea"></div>
 
 						</article>
@@ -127,6 +114,35 @@
 			</nav>
 		</div>
 
+		<div id="elem-tpl-area">
+
+			<div class="photo-detail" id="photo-detail">
+				<div class="img">
+					<img src="http://localhost:5001/images/hunziker/Hunziker_AV_0066_001.jpg" />
+				</div>
+				<div class="text">
+					Titel: <b id="photo-detail-title"></b><br>
+					Fotograf: <b id="photo-detail-photographer"></b><br>
+					Jahr: <b id="photo-detail-year"></b><br>
+					Ort: <b id="photo-detail-spatial"></b><br>
+					Rechte: <b id="photo-detail-right"></b><br>
+				</div>
+			</div>
+
+			<div class="photo-entry" data-id="">
+				<img class="photo-entry-img" src=""></img>
+				Titel: <b class="photo-entry-txt"></b>
+			</div>
+
+			<div class="filter-item-tpl">
+				<b class="filter-item-desc"></b>
+    		<select class="filter-item-select" multiple>
+    			<option class="filter-item-entry"></option>
+      	</select>
+			</div>
+
+
+		</div>
 
 		<script src="js/script.js"></script>
 
