@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+
+  backend:
+    container_name: ${PROJECT_NAME}_backend
+    build: ./docker-backend
+    volumes:
+      - ./config.yaml:/etc/appconfig.yaml
+      - ./backend/flaskyphoto:/app
+      - ./frontend:/var/www/frontend
+      - ./data/images:/var/www/images
+      - ./data/db.sql:/db.sql
+      - ./files/nginx.conf:/app/nginx.conf
+      - ./files/flaskyphoto.conf:/etc/nginx/conf.d/flaskyphoto.conf
+    ports:
+      - "${PORT_FLASK}:5000"
+      - "5050:80"
+    #restart: always
+    depends_on:
+      - imaginary
+    links:
+      - imaginary
+    env_file: settings.env
+    environment:
+      APP_CONFIG: /etc/appconfig.yaml
+
+
+  imaginary:
+    image: h2non/imaginary:latest
+    container_name: ${PROJECT_NAME}_imaginary
+    command: -cors -http-cache-ttl 31556926 -mount /data
+    volumes:
+      - ./data/images:/data/images
+    ports:
+      - "${PORT_IMAGINARY}:9000"
+    restart: always
+    env_file:
+      - settings.env

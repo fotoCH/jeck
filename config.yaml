@@ -1,7 +1,8 @@
 ---
 
 database:
-  engine: "sqlite:////home/eni/code/foto-ch/testdb.sql?check_same_thread=false"
+  #engine: "sqlite:////home/eni/code/foto-ch/testdb2.sql?check_same_thread=false"
+  engine: "sqlite:////db.sql?check_same_thread=false"
   echo: true
 
 
@@ -16,8 +17,9 @@ auth:
       pass: 123qwe
 
 storage:
-  path: ../../flaskyphoto-data/
-  storage-url: http://localhost:5001/
+  path: /var/www/images
+  storage-url: http://localhost:5050/images/
+  thumb-url: http://localhost:9000/crop?width=170&height=170&gravity=smart&file=
 
 
 # DO NOT CHANGE types or add enries after setup or BAD things will happen
@@ -33,17 +35,19 @@ schema:
       - name: dc_created
         type: string
         desc: Datum
-        searchable: false
+        searchable: true
 
       - name: dc_title
         type: string
         desc: Titel
         searchable: true
+        filterable: false
 
       - name: dc_description
         type: string
         desc: Beschreibung
         searchable: true
+        filterable: false
 
       - name: dc_identifier
         type: string
@@ -63,7 +67,7 @@ schema:
       - name: dcterms_ispart_of
         type: string
         desc: Bestand ID fotoCH
-        searchable: false
+        searchable: true
 
       - name: dcterms_medium
         type: string
@@ -83,7 +87,7 @@ schema:
       - name: edm_dataprovider
         type: string
         desc: Institution ID
-        searchable: false
+        searchable: true
 
       - name: image_path
         type: string
@@ -98,7 +102,7 @@ schema:
       - name: dc_created_bis
         type: string
         desc: Datum bis
-        searchable: true
+        searchable: false
 
       - name: supplier_id
         type: string
@@ -128,7 +132,7 @@ schema:
       - name: edm_license
         type: string
         desc: Rechtslizenz des Bildes
-        searchable: true
+        searchable: false
 
       - name: edm_watermark
         type: string
@@ -148,7 +152,7 @@ schema:
       - name: edm_notes
         type: string
         desc: Bemerkungen
-        searchable: true
+        searchable: false
 
       - name: edm_condition
         type: string
@@ -172,4 +176,4 @@ schema:
 
 
     settings:
-      fileregex: "{image_path}"
+      fileregex: "M/{supplier_id}"

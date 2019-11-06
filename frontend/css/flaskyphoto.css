@@ -29,21 +29,37 @@ div.photo-detail {
 
 div.photo-detail > div.img {
   text-align: center;
+  height: 100%;
 }
 
 div.photo-detail > div.img > img {
   width: 85%;
+  height: 100%;
   text-align: center;
+  display: inline-block;
 }
+div.photo-detail > div.img > .img-nav {
+  width: 6.5%;
+  margin-top: 0px;
+  min-height: 400px;
+  cursor: pointer;
+  padding-top: 100px;
+  font-size: 200%;
+  color: rgb(94, 94, 94);
+  display: inline-block;
+}
+div.photo-detail > div.img > .img-nav:hover {
+  color: #000;
+}
+
 
 div.photo-detail > div.text {
   text-align: center;
   min-height: 100px;
   width: 100%;
   padding-bottom: 30px;
+  clear: both;
 }
-
-
 
 /* Search filters form */
 div.filter-item {

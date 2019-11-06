@@ -6,8 +6,10 @@
 
 const api_url = "http://localhost:5000/"
 const api_table = "photos"
+const thumb_url = "http://localhost:9000/crop?width=170&height=170&gravity=smart&file="
 
-current_page = 1;
+
+current_page = 0;
 is_search = false;
 is_filter = false;
 filter_items = [];
@@ -15,6 +17,14 @@ filter_spec = [];
 gallery_is_open = false;
 gallery_curr_id = 0;
 
+
+get_thumb_url = function(data_url){
+  if (data_url){
+    var path = data_url.replace(/^[a-z]{4,5}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
+    return thumb_url + path;
+  }
+  return null;
+};
 
 
 // rebuild list of photos from a given data array
@@ -24,10 +34,14 @@ update_photos = function(data, append=false){
   if (!append){
     elem.html("")
   }
-  for (entry of data) {
+  $("#search-result-count").html(data.count);
+  for (entry of data.results) {
     var imgentry = tpl.clone();
     imgentry.attr("data-id", entry.id);
-    imgentry.children(".photo-entry-img").attr("src", entry.files[0]);
+
+    var thumburl = get_thumb_url(entry.files[0]);
+
+    imgentry.children(".photo-entry-img").attr("src", thumburl);
     imgentry.children(".photo-entry-txt").html(entry.dc_title);
     if (append){
       elem.append(imgentry);
@@ -77,18 +91,22 @@ open_gallery_photo = function(elem){
       }
     }
     $("#photo-detail").detach().insertAfter(prev);
+    $("html, body").scrollTop( $('#photo-detail').offset().top-200 );
+
     $.ajax({
       dataType: "json",
       url: api_url + api_table + "/" + gallery_curr_id
     }).done(function(data){
       $("#photo-detail").children("div.img").children("img").attr("src", data.files[0])
-      $("html, body").scrollTop( $('#photo-detail').offset().top-10 );
+
       // TODO: fill out all elems
       $("#photo-detail-title").html(data.dc_title);
       $("#photo-detail-photographer").html(data.dc_creator_text);
       $("#photo-detail-year").html(data.zeitraum);
       $("#photo-detail-spatial").html(data.dcterms_spatial);
       $("#photo-detail-right").html(data.dc_right);
+      $("#photo-detail-id").html(data.id);
+
     });
 };
 
@@ -270,5 +288,14 @@ $(document).ready(function(){
     }
     e.preventDefault();
   });
+
+  // left/right arrows on image detail
+  $(".img-nav-left").click(function(){
+    gallery_prev_photo();
+  });
+  $(".img-nav-right").click(function(){
+    gallery_next_photo();
+  });
+
 
 });

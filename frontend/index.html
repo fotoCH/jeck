@@ -35,7 +35,7 @@
 				<div class="row">
 					<div class="col-md-4 col-sm-5 col-xs-8">
 						<div class="logo">
-							<h1><a href="index.html"><b>Föteli vom Jeck</b></a></h1>
+							<h1><a href="index.html"><b>Jakob Hunziker</b></a></h1>
 						</div>
 					</div><!-- col-md-4 -->
 					<div class="col-md-8 col-sm-7 col-xs-4">
@@ -76,6 +76,7 @@
 						<div class="widget widget-recent-posts">
 							<h3 class="widget-title">Erweiterte Filter</h3>
 							<div id="filterarea"></div>
+							<br />Anzahl Resultate: <b id="search-result-count">1024</b>
 						</div>
 					</aside>
 
@@ -118,7 +119,13 @@
 
 			<div class="photo-detail" id="photo-detail">
 				<div class="img">
-					<img src="http://localhost:5001/images/hunziker/Hunziker_AV_0066_001.jpg" />
+					<div class="img-nav-left img-nav">
+						<span class="ion-arrow-left-b"></span>
+					</div>
+					<img src="./img/placeholder.png" />
+					<div class="img-nav-right img-nav">
+						<span class="ion-arrow-right-b"></span>
+					</div>
 				</div>
 				<div class="text">
 					Titel: <b id="photo-detail-title"></b><br>
@@ -126,11 +133,12 @@
 					Jahr: <b id="photo-detail-year"></b><br>
 					Ort: <b id="photo-detail-spatial"></b><br>
 					Rechte: <b id="photo-detail-right"></b><br>
+					ID: <b id="photo-detail-id"></b><br>
 				</div>
 			</div>
 
 			<div class="photo-entry" data-id="">
-				<img class="photo-entry-img" src=""></img>
+				<img class="photo-entry-img" src="./img/placeholder.png"></img>
 				Titel: <b class="photo-entry-txt"></b>
 			</div>
 
