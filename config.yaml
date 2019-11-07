@@ -3,7 +3,9 @@
 database:
   #engine: "sqlite:////home/eni/code/foto-ch/testdb2.sql?check_same_thread=false"
   engine: "sqlite:////db.sql?check_same_thread=false"
+  #engine: "mysql+mysqlconnector://flaskyphoto:123qwe@db/flaskyphoto"
   echo: true
+
 
 
 auth:

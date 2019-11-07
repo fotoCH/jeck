@@ -29,7 +29,7 @@ services:
   imaginary:
     image: h2non/imaginary:latest
     container_name: ${PROJECT_NAME}_imaginary
-    command: -cors -http-cache-ttl 31556926 -mount /data
+    command: -cors -concurrency 20 -http-cache-ttl 604800 -mount /data
     volumes:
       - ./data/images:/data/images
     ports:
@@ -37,3 +37,15 @@ services:
     restart: always
     env_file:
       - settings.env
+
+  # db:
+  #   image: mariadb:latest
+  #   container_name: ${PROJECT_NAME}_db
+  #   volumes:
+  #     - ./data/db:/var/lib/mysql
+  #     - ./files/my.cnf:/etc/mysql/my.cnf
+  #   ports:
+  #     - "${PORT_MYSQL}:3306"
+  #   restart: always
+  #   env_file:
+  #     - settings.env

@@ -4,9 +4,13 @@
 //
 
 
-const api_url = "http://localhost:5000/"
+
+const base_url = window.location.protocol + "//" + window.location.hostname +
+                 ":" + window.location.port + "/"
+
+const api_url = base_url + "api/"
 const api_table = "photos"
-const thumb_url = "http://localhost:9000/crop?width=170&height=170&gravity=smart&file="
+const thumb_url = base_url + "image-proxy/crop?width=170&height=170&gravity=smart&file="
 
 
 current_page = 0;

@@ -71,7 +71,6 @@ def after_request(response):
     return response
 
 
-
 #
 # The API itself
 #
