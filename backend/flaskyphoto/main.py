@@ -42,7 +42,10 @@ api = flask_restplus.Api(
 )
 
 app.config['SQLALCHEMY_DATABASE_URI'] = config['database']['engine']
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+app.config['SQLALCHEMY_POOL_RECYCLE'] = 280
+app.config['SQLALCHEMY_POOL_SIZE'] = 20
+
 
 dbo = SQLAlchemy(app)
 
