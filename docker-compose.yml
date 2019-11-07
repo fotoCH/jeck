@@ -38,14 +38,15 @@ services:
     env_file:
       - settings.env
 
-  # db:
-  #   image: mariadb:latest
-  #   container_name: ${PROJECT_NAME}_db
-  #   volumes:
-  #     - ./data/db:/var/lib/mysql
-  #     - ./files/my.cnf:/etc/mysql/my.cnf
-  #   ports:
-  #     - "${PORT_MYSQL}:3306"
-  #   restart: always
-  #   env_file:
-  #     - settings.env
+
+  db:
+    image: mariadb:latest
+    container_name: ${PROJECT_NAME}_db
+    volumes:
+      - ./data/db:/var/lib/mysql
+      - ./files/my.cnf:/etc/mysql/my.cnf
+    ports:
+      - "3306:3306"
+    restart: always
+    env_file:
+      - settings.env

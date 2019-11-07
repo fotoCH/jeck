@@ -6,16 +6,24 @@ import datetime
 import flask
 import flask_restplus
 
+from flask_sqlalchemy import SQLAlchemy
 from flask_jwt import JWT, jwt_required, current_identity
-
-import db as db_base
-import helpers
-import auth
-import addfile
 
 
 from pprint import pprint
 
+
+# this is not the nicest but works for now
+try:
+    import db as db_base
+    import helpers
+    import auth
+    import addfile
+except ModuleNotFoundError:
+    from . import db as db_base
+    from . import helpers
+    from . import auth
+    from . import addfile
 
 
 # Init app and database
@@ -24,20 +32,34 @@ config = helpers.load_config()
 # Init fileadder class
 fileadder = addfile.ItemFileAdder(config)
 
-# Init Database
-db = db_base.Database(config)
-db.init()
-db.commit()
-
-
 # app & API
 app = flask.Flask(__name__)
+blueprint = flask.Blueprint('v1', __name__, url_prefix='/api')
+
 api = flask_restplus.Api(
     app,
+    doc="/",
     version='1.0',
     title='flaskyphoto',
     description='A simple & dynamic api to manage photos or other documents'
 )
+
+app.config["APPLICATION_ROOT"] = "/api"
+app.config['SQLALCHEMY_DATABASE_URI'] = config['database']['engine']
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+app.config['SQLALCHEMY_POOL_RECYCLE'] = 280
+app.config['SQLALCHEMY_POOL_SIZE'] = 20
+
+
+dbo = SQLAlchemy(app)
+
+# Init Database
+db = db_base.Database(dbo, config)
+db.init()
+#db.commit()
+
+
+print("hello and welcome to flaskyphoto")
 
 
 # JWT authentication
@@ -60,6 +82,10 @@ else:
             return decorator
         return wrapper
 
+
+@app.before_request
+def before_request():
+    db.update_session(dbo)
 
 
 #fix CORS stuff

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 
+import sys
+
 import sqlalchemy
 import sqlalchemy_filters
 from sqlalchemy.orm import sessionmaker
@@ -27,7 +29,8 @@ def yaml_to_model(base, yaml_spec):
     for field in yaml_spec['spec']:
         spec_type = field['type']
         if spec_type == "string":
-            attr_dict[field['name']] = Column(String)
+            flen = field.get('size', 255)
+            attr_dict[field['name']] = Column(String(flen))
         if spec_type == "integer" or spec_type=="number":
             attr_dict[field['name']] = Column(Integer)
         if spec_type == "bool":
@@ -51,56 +54,45 @@ class Database:
     """
     the abstract db class which is the main interface for the app
     """
-    def __init__(self, config):
+    def __init__(self, db, config):
         self.base = False
         self.tables = {}
         self.spec = {}
-        self.engine = False
-        self.session = False
+
+        self.db = db
+        self.session = self.db.session
         self.initialized = False
         self.config = config
 
 
+
     def init(self):
-        self.create_base()
         self.create_tables_from_spec()
-        self.create_engine()
-        self.create_session()
         self.create_tables()
         self.commit()
         self.initialized = True
 
-    def create_base(self):
-        self.base = sqlalchemy.ext.declarative.declarative_base()
+
+    def update_session(self, db):
+        self.db = db
+        self.session = db.session
+
 
     def create_tables_from_spec(self):
         for spec in self.config['schema']:
             self.spec[spec['name']] = spec['spec']
-            self.tables[spec['name']] = yaml_to_model(self.base, spec)
+            self.tables[spec['name']] = yaml_to_model(self.db.Model, spec)
 
-    def create_engine(self):
-        self.engine = sqlalchemy.create_engine(
-            self.config['database']['engine'],
-            echo=self.config['database']['echo']
-        )
-        pass
-
-    def create_session(self):
-        if self.engine:
-            Session = sessionmaker(bind=self.engine)
-            self.session = Session()
 
     def create_tables(self):
-        self.base.metadata.create_all(self.engine)
+        self.db.create_all()
+
 
     def commit(self):
         self.session.commit()
 
 
-
-
     # query stuff
-
     def get_item(self, table, id):
         """ get single item from table over id
         """
