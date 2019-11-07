@@ -76,12 +76,6 @@ else:
         return wrapper
 
 
-@app.before_request
-def before_request():
-    print("update database session")
-    db.update_session(dbo)
-
-
 #fix CORS stuff
 @app.after_request
 def after_request(response):

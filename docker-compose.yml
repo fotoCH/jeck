@@ -38,6 +38,7 @@ services:
     env_file:
       - settings.env
 
+
   db:
     image: mariadb:latest
     container_name: ${PROJECT_NAME}_db
