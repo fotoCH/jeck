@@ -34,15 +34,19 @@ fileadder = addfile.ItemFileAdder(config)
 
 # app & API
 app = flask.Flask(__name__)
-blueprint = flask.Blueprint('v1', __name__, url_prefix='/api')
+blueprint = flask.Blueprint('api', __name__, url_prefix='/api')
 
 api = flask_restplus.Api(
-    app,
+    blueprint,
     doc="/",
     version='1.0',
     title='flaskyphoto',
     description='A simple & dynamic api to manage photos or other documents'
 )
+
+app.register_blueprint(blueprint)
+
+
 
 app.config["APPLICATION_ROOT"] = "/api"
 app.config['SQLALCHEMY_DATABASE_URI'] = config['database']['engine']
