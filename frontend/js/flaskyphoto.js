@@ -111,13 +111,11 @@ open_gallery_photo = function(elem){
     }).done(function(data){
       $("#photo-detail").children("div.img").children("img").attr("src", data.files[0])
 
-      // TODO: fill out all elems
-      $("#photo-detail-title").html(data.dc_title);
-      $("#photo-detail-photographer").html(data.dc_creator_text);
-      $("#photo-detail-year").html(data.zeitraum);
-      $("#photo-detail-spatial").html(data.dcterms_spatial);
-      $("#photo-detail-right").html(data.dc_right);
-      $("#photo-detail-id").html(data.id);
+      // fill out all elems
+      $("#photodetail-txt > b").each(function(idx){
+        var attr_name = $(this).attr("data-field");
+        $(this).html(data[attr_name]);
+      });
 
     });
 };
@@ -131,7 +129,7 @@ gallery_next_photo = function(){
   idx = (idx + 1) % list.length;
   var elem = list.eq(idx);
   if (elem.length>0){
-    open_gallery_photo(elem)
+    open_gallery_photo(elem);
   }
 }
 
@@ -276,12 +274,27 @@ $(document).ready(function(){
   // build filter list
   build_filter_list();
 
+  // scroll to top button
+  var scroll_top_button = $("#scroll-top-btn");
+  scroll_top_button.click(function(){
+      $(window).scrollTop(0);
+  });
+
   // infinite scroll loader
   $(window).scroll(function() {
-     if($(window).scrollTop() + $(window).height() == $(document).height()) {
-       //console.log("scrolload");
-       load_next_page();
-     }
+    // infinite scroll
+    if($(window).scrollTop() + $(window).height() == $(document).height()) {
+     //console.log("scrolload");
+     load_next_page();
+    }
+
+    // display scroll to top button
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+      scroll_top_button.css({"display":"block"});
+    } else {
+      scroll_top_button.css({"display":"none"});
+    }
+
   });
 
   // event binding for left-right keys if gallery is open
@@ -308,6 +321,8 @@ $(document).ready(function(){
   $(".img-nav-right").click(function(){
     gallery_next_photo();
   });
+
+
 
 
 });

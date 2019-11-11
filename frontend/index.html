@@ -52,7 +52,7 @@
     								<li class="cl-effect-11"><a href="full-width.html" data-hover="Photos">Photos</a></li>
     								<li class="cl-effect-11"><a href="about.html" data-hover="Dokumentationen">Dokumentationen</a></li>
 										<li class="cl-effect-11"><a href="about.html" data-hover="Info">Info</a></li>
-    								<li class="cl-effect-11"><a href="contact.html" data-hover="Contact">Kontakt </a></li>
+    								<li class="cl-effect-11"><a href="contact.html" data-hover="Kontakt">Kontakt </a></li>
   								</ul>
 							</div><!-- /.navbar-collapse -->
 						</nav>
@@ -87,11 +87,15 @@
 							<div class="entry-content clearfix" id="photoarea"></div>
 
 						</article>
+
 					</main>
 
 				</div>
 			</div>
 		</div>
+
+		<button id="scroll-top-btn" title="Nach oben scrollen">Zum Anfang</button>
+
 		<footer id="site-footer">
 			<div class="container">
 				<div class="row">
@@ -127,13 +131,20 @@
 						<span class="ion-arrow-right-b"></span>
 					</div>
 				</div>
-				<div class="text">
-					Titel: <b id="photo-detail-title"></b><br>
-					Fotograf: <b id="photo-detail-photographer"></b><br>
-					Jahr: <b id="photo-detail-year"></b><br>
-					Ort: <b id="photo-detail-spatial"></b><br>
-					Rechte: <b id="photo-detail-right"></b><br>
-					ID: <b id="photo-detail-id"></b><br>
+				<div class="text" id="photodetail-txt">
+
+					Fotograf: <b data-field="dc_creator"></b><br>
+					Titel: <b data-field="dc_title"></b><br>
+					Beschreibung: <b data-field="dc_description"></b><br />
+					Ort: <b data-field="dcterms_spatial"></b><br>
+					Erstellungsdatum: <b data-field="dc_created"></b><br>
+					Institution: <b data-field="edm_dataprovider"></b><br>
+					Bestand: <b data-field="dcterms_ispart_of"></b><br>
+					Copyright: <b data-field="dc_right"></b><br>
+					Medium: <b data-field="dcterms_medium"></b><br>
+					Signatur Digitalisat: <b data-field="supplier_id"></b><br>
+					ID-Foto: <b data-field="id"></b><br>
+
 				</div>
 			</div>
 

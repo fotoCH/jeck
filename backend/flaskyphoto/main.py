@@ -280,6 +280,32 @@ class FilterActions(flask_restplus.Resource):
 
 
 
+@api.route('/<string:tablename>/map')
+@api.doc(responses={404: 'Table not found'})
+@api.doc(responses={200: 'Success'})
+class MapActions(flask_restplus.Resource):
+    def get(self, tablename):
+        if db.spec.get(tablename):
+            rf = db.session.query(
+                db.tables[tablename].id,
+                db.tables[tablename].lat,
+                db.tables[tablename].lon
+            ).filter(
+                db.tables[tablename].lat.isnot(None)
+            ).all()
+            res = []
+            for id, lat, lon in rf:
+                try:
+                    res.append({
+                        "id": id,
+                        "lat": float(lat),
+                        "lng": float(lon)
+                    })
+                except ValueError:
+                    pass
+            return res
+        return {"message":"cannot find table with the name provided"}, 404
+
 
 
 

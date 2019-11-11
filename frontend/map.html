@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>jeckMAP</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+
+
+      const API_URL = "http://localhost:5050/api/photos"
+
+
+      function containsObject(obj, list) {
+          var x;
+          for (x in list) {
+              if (list.hasOwnProperty(x) && list[x] === obj) {
+                  return true;
+              }
+          }
+
+          return false;
+      }
+
+      function create_window_content(response){
+        return "<b>"+response.dc_title + "</b><br>"
+               + "<img src="+response.files[0] + " />"
+      }
+
+      function initMap(){
+        fetch(API_URL + '/map')
+        .then(response => response.json())
+        .then(function(response){
+          initMap2(response);
+        });
+      }
+
+      function initMap2(locations) {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 4,
+          center: { lat: 46.928371, lng: 8.233985 }
+        });
+
+        var infowindow = new google.maps.InfoWindow({
+          content: "tpl"
+        });
+
+        var markers = [];
+        var reserved_positons = [];
+        for (itm of locations){
+
+          var marker = new google.maps.Marker({
+            position: itm,
+            //label: ""+itm.id
+          });
+
+          // click function
+          cfunc = function() {
+            var that = this;
+            fetch(API_URL + '/' + this.item.id)
+            .then(response => response.json())
+            .then(function(response){
+                infowindow.setContent(create_window_content(response));
+                infowindow.open(map, that.marker);
+            });
+
+          }
+          marker.addListener('click',cfunc.bind({item: itm, marker: marker}))
+          markers.push(marker);
+        }
+
+        var markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+
+      }
+
+
+
+
+
+
+
+    </script>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvEZLmwAyPVC_zrJ6WhKA7LAUI4Ve4gdE&callback=initMap">
+    </script>
+  </body>
+</html>
