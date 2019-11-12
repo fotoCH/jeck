@@ -26,16 +26,19 @@
       const API_URL = "http://localhost:5050/api/photos"
 
 
-      function containsObject(obj, list) {
-          var x;
-          for (x in list) {
-              if (list.hasOwnProperty(x) && list[x] === obj) {
-                  return true;
-              }
+      function in_array(haystack, needle){
+        var i, j, current;
+        for(i = 0; i < haystack.length; ++i){
+          if(needle.length === haystack[i].length){
+            current = haystack[i];
+            for(j = 0; j < needle.length && needle[j] === current[j]; ++j);
+            if(j === needle.length)
+              return i;
           }
-
-          return false;
+        }
+        return -1;
       }
+
 
       function create_window_content(response){
         return "<b>"+response.dc_title + "</b><br>"
@@ -63,6 +66,16 @@
         var markers = [];
         var reserved_positons = [];
         for (itm of locations){
+
+          if ( in_array(reserved_positons, [ itm.lat, itm.lng ]) > -1 ) {
+            console.log("slightly move marker");
+            itm.lat = itm.lat + (Math.random() -.5) / 1500;
+            itm.lng = itm.lng + (Math.random() -.5) / 1500;
+            console.log(itm);
+          }
+
+          reserved_positons.push([ itm.lat, itm.lng ]);
+
 
           var marker = new google.maps.Marker({
             position: itm,

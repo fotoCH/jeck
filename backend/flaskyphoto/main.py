@@ -285,6 +285,11 @@ class FilterActions(flask_restplus.Resource):
 @api.doc(responses={200: 'Success'})
 class MapActions(flask_restplus.Resource):
     def get(self, tablename):
+        """
+        Get all entries with an lat/lon dataset.
+        Returns all id and the lat-lon field for all entries in a table
+        This function only makes sense in tables with lat/lon fields, otherwise it returns an empty array.
+        """
         if db.spec.get(tablename):
             rf = db.session.query(
                 db.tables[tablename].id,
