@@ -32,10 +32,8 @@ gallery_curr_id = 0;
 
 get_thumb_url = function(data_url){
   if (data_url){
-    //var path = data_url.replace(/^[a-z]{4,5}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
     var reg = /.+?\:\/\/.+?(\/.+?)(?:#|\?|$)/;
     var path = reg.exec( data_url )[1];
-    console.log(data_url, path);
     return thumb_url + path;
   }
   return null;
