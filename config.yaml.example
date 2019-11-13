@@ -1,0 +1,205 @@
+---
+
+database:
+  #engine: "sqlite:////home/eni/code/foto-ch/testdb2.sql?check_same_thread=false"
+  #engine: "sqlite:////db.sql?check_same_thread=false"
+  engine: "mysql+mysqlconnector://flaskyphoto:123qwe@db/flaskyphoto"
+  echo: true
+
+
+
+auth:
+  enable: True
+  token_valid_for: 3600
+  secret: kusagfh89wqkjsdhfsaldkfhsefkjhsdkjh
+  users:
+    - user: admin
+      pass: 123qwe
+    - user: cyrillvw
+      pass: 123qwe
+
+storage:
+  path: /var/www/images
+  storage-url: http://localhost:5050/images/
+  thumb-url: http://localhost:9000/crop?width=170&height=170&gravity=smart&file=
+
+
+mail:
+  host: mail.example.com
+  port: 587
+  user: test@example.com
+  pass: 123qwe
+  mailto: rcpt@example.com
+  subject: Mail form jakobhunziker.ch
+
+
+# DO NOT CHANGE types or add enries after setup or BAD things will happen
+schema:
+  - name: photos
+    spec:
+
+      - name: dc_creator
+        type: string
+        desc: ID Fotograf
+        searchable: false
+        size: 255
+
+      - name: dc_created
+        type: string
+        desc: Datum
+        searchable: true
+        size: 255
+
+      - name: dc_title
+        type: text
+        desc: Titel
+        searchable: true
+        filterable: false
+
+      - name: dc_description
+        type: text
+        desc: Beschreibung
+        searchable: true
+        filterable: false
+
+      - name: dc_identifier
+        type: text
+        desc: Link zum Bild im Originalkontext
+        searchable: false
+
+      - name: dc_right
+        type: text
+        desc: Rechteinhaber
+        searchable: false
+
+      - name: dc_coverage
+        type: text
+        desc: Abdeckung (?)
+        searchable: false
+
+      - name: dcterms_ispart_of
+        type: string
+        desc: Bestand ID fotoCH
+        searchable: true
+        size: 255
+
+      - name: dcterms_medium
+        type: string
+        desc: Bildträger, Masse
+        searchable: false
+        size: 255
+
+      - name: dcterms_spatial
+        type: string
+        desc: Ortsbezeichnung
+        searchable: true
+        size: 255
+
+      - name: dcterms_subject
+        type: text
+        desc: Deskriptoren
+        searchable: true
+
+      - name: edm_dataprovider
+        type: text
+        desc: Institution ID
+        searchable: true
+
+      - name: image_path
+        type: string
+        desc: Pfad zu Bild auf Server
+        searchable: false
+        size: 255
+
+      - name: all
+        type: text
+        desc: Hilfsfeld für die eingabe ganzer Datensätze
+        searchable: false
+
+      - name: dc_created_bis
+        type: string
+        desc: Datum bis
+        searchable: false
+        size: 255
+
+      - name: supplier_id
+        type: string
+        desc: Name Digitalisat
+        searchable: false
+        size: 255
+
+      - name: zeitraum
+        type: string
+        desc: Datum als Text
+        searchable: true
+        size: 255
+
+      - name: lon
+        type: string
+        desc: Geographische Breite
+        searchable: false
+        size: 255
+
+      - name: lat
+        type: string
+        desc: Geographische Länge
+        searchable: false
+        size: 255
+
+      - name: google_revcode
+        type: string
+        desc: Google code
+        searchable: false
+        size: 255
+
+      - name: edm_license
+        type: text
+        desc: Rechtslizenz des Bildes
+        searchable: false
+
+      - name: edm_watermark
+        type: string
+        desc: Wasserzeichen der Institution
+        searchable: false
+        size: 255
+
+      - name: edm_order
+        type: text
+        desc: Bestelladresse
+        searchable: false
+
+      - name: url_wikimedia
+        type: text
+        desc: URL zu Wikimedia
+        searchable: false
+
+      - name: edm_notes
+        type: text
+        desc: Bemerkungen
+        searchable: false
+
+      - name: edm_condition
+        type: string
+        desc: Zustand Bildträger
+        searchable: false
+        size: 255
+
+      - name: edm_author
+        type: text
+        desc: Verfasser Liste
+        searchable: false
+
+      - name: edm_editing_date
+        type: string
+        desc: Datum
+        searchable: false
+        size: 255
+
+      - name: dc_creator_text
+        type: text
+        desc: Name Fotograf
+        searchable: true
+
+
+    settings:
+      fileregex: "M/{supplier_id}"
