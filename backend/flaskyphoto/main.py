@@ -9,6 +9,7 @@ import flask_restplus
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt import JWT, jwt_required, current_identity
 
+import smtplib
 
 from pprint import pprint
 
@@ -311,6 +312,38 @@ class MapActions(flask_restplus.Resource):
             return res
         return {"message":"cannot find table with the name provided"}, 404
 
+
+
+
+@api.route('/mail')
+@api.doc(responses={200: 'Success'})
+@api.doc(responses={500: 'Error'})
+class MailActions(flask_restplus.Resource):
+    def post(self):
+        """
+        Send mail to configured address in config.yaml
+        """
+        if flask.request.is_json:
+            msg = flask.request.get_json()['mail']
+            s = smtplib.SMTP(
+                host=config['mail']['host'],
+                port=config['mail']['port']
+            )
+            s.starttls()
+            s.login(
+                config['mail']['user'],
+                config['mail']['pass'],
+            )
+            mail =  "From: Server <{0}>\n".format(config['mail']['user'])
+            mail += "Reply-To: {0} <{1}>\n".format(msg['name'], msg['from'])
+            mail += "To: Reciver <{0}>\n".format(config['mail']['mailto'])
+            mail += "Subject: {0}\n\n".format(config['mail']['subject'])
+            mail += msg['message']
+            s.sendmail(config['mail']['user'], [ config['mail']['mailto'] ], mail)
+            s.close()
+            return 200
+
+        return {"message":"an error occured"}, 500
 
 
 

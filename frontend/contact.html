@@ -19,6 +19,9 @@
 	    <script src="js/bootstrap.min.js"></script>
 	    <script src="js/pace.min.js"></script>
 	    <script src="js/modernizr.custom.js"></script>
+
+			<script src="js/mail.js"></script>
+
 	</head>
 
 	<body id="page">
@@ -58,18 +61,23 @@
 					<main class="col-md-12">
 						<h1 class="page-title">Kontakt</h1>
 						<article class="post">
+
+							<div class="form-sendt">
+								Vielen Dank für Ihre Nachricht. Wir werden uns melden.
+								<br />
+							</div>
+
 							<div class="entry-content clearfix">
-								<form action="#" method="post" class="contact-form">
+								<form class="contact-form" id="contact-form">
 									<div class="row">
 										<div class="col-md-6 col-md-offset-3">
-											<input type="text" name="name" placeholder="Name" required>
-											<input type="email" name="email" placeholder="Email" required>
-											<textarea name="message" rows="7" placeholder="Nachricht" required></textarea>
+											<input type="text" name="name" placeholder="Name" id="form-field-name" required>
+											<input type="email" name="email" placeholder="Email" id="form-field-email"  required>
+											<textarea name="message" rows="7" placeholder="Nachricht" id="form-field-msg" required></textarea>
 											<button class="btn-send btn-5 btn-5b ion-ios-paperplane"><span>Absenden</span></button>
 										</div>
 									</div>	<!-- row -->
 								</form>
-							</div>
 						</article>
 					</main>
 				</div>

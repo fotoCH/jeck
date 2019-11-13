@@ -119,3 +119,11 @@ div.ss-multi-selected {
 	max-width: 230px;
 	padding-left: 20px;
 }
+
+
+
+.form-sendt {
+  text-align: center;
+  font-size: 120%;
+  display: none;
+}
