@@ -38,7 +38,7 @@ app = flask.Flask(__name__)
 blueprint = flask.Blueprint('api', __name__, url_prefix='/api')
 
 api = flask_restplus.Api(
-    blueprint,
+    app,
     doc="/",
     version='1.0',
     title='flaskyphoto',
@@ -49,7 +49,7 @@ app.register_blueprint(blueprint)
 
 
 
-app.config["APPLICATION_ROOT"] = "/api"
+#app.config["APPLICATION_ROOT"] = "/api"
 app.config['SQLALCHEMY_DATABASE_URI'] = config['database']['engine']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_POOL_RECYCLE'] = 280
