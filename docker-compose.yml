@@ -14,8 +14,7 @@ services:
       - ./files/nginx.conf:/app/nginx.conf
       - ./files/flaskyphoto.conf:/etc/nginx/conf.d/flaskyphoto.conf
     ports:
-      - "${PORT_FLASK}:5000"
-      - "5050:80"
+      - "${PORT_WWW}:80"
     #restart: always
     depends_on:
       - imaginary

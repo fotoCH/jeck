@@ -6,3 +6,6 @@ backend/unused/
 backend/flaskyphoto/nginx.conf
 backend/flaskyphoto/supervisord.pid
 backend/flaskyphoto/test-filter.json
+
+config.yaml
+settings.env
