@@ -142,7 +142,11 @@ div.ss-multi-selected {
 	padding-left: 20px;
 }
 
-
+.form-loading {
+  text-align: center;
+  display: none;
+  margin-top: -80px;
+}
 
 .form-sendt {
   text-align: center;

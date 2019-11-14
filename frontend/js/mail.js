@@ -7,7 +7,9 @@ $(document).ready(function(){
 
 
   $( "#contact-form" ).submit(function( evt ) {
-    console.log("form-sendt");
+
+    $("#contact-form").css({"display": "none"});
+    $("div.form-loading").css({"display": "block"});
 
     var name = $("#form-field-name").val();
     var from = $("#form-field-email").val();
@@ -28,7 +30,7 @@ $(document).ready(function(){
       data: JSON.stringify({ "mail": msg })
     }).done(function(data){
 
-      $("#contact-form").css({"display": "none"});
+      $("div.form-loading").css({"display": "none"});
       $("div.form-sendt").css({"display": "block"});
 
     });
