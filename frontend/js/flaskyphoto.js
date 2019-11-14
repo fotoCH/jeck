@@ -55,7 +55,14 @@ update_photos = function(data, append=false){
     var thumburl = get_thumb_url(entry.files[0]);
 
     imgentry.children(".photo-entry-img").attr("src", thumburl);
-    imgentry.children(".photo-entry-txt").html(entry.dc_title);
+
+    if (entry.dcterms_spatial) {
+      var desctxt = entry.dcterms_spatial;
+    } else {
+      var desctxt = entry.dc_title;
+    }
+
+    imgentry.children(".photo-entry-txt").html(desctxt);
     if (append){
       elem.append(imgentry);
     }
