@@ -32,7 +32,7 @@ function in_array(haystack, needle){
 
 
 function create_window_content(response){
-  return "<b>"+response.dc_title + "</b><br>"
+  return "<b>"+response.dc_title + "</b> "+ response.dcterms_spatial + "<br>"
   + "<img src="+response.files[0] + " />"
 }
 

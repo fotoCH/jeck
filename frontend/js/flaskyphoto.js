@@ -28,7 +28,7 @@ filter_items = [];
 filter_spec = [];
 gallery_is_open = false;
 gallery_curr_id = 0;
-
+slimselect_arr = [];
 
 get_thumb_url = function(data_url){
   if (data_url){
@@ -211,6 +211,13 @@ load_next_page = function(){
 };
 
 
+reset_filters = function(){
+  for (itm of slimselect_arr) {
+    itm.set([]);
+  }
+};
+
+
 // builds filter ui according to API specs
 build_filter_list = function(){
   $.ajax({
@@ -218,6 +225,7 @@ build_filter_list = function(){
     url: api_url + api_table + "/filter-spec"
   }).done(function(data){
     filter_items = [];
+    slimselect_arr = [];
     var tpl = $("#elem-tpl-area > div.filter-item-tpl");
     for (item of data){
       var filterentry = $(tpl).clone();
@@ -230,9 +238,10 @@ build_filter_list = function(){
         filterentry.children(".filter-item-select").append(itm)
       }
       $("#filterarea").append(filterentry);
-      new SlimSelect({
+      var sel_obj = new SlimSelect({
         select: '#filter-'+item.name
       });
+      slimselect_arr.push(sel_obj);
       $('#filter-'+item.name).change(function(itm){
         update_filters();
       });
@@ -281,6 +290,11 @@ $(document).ready(function(){
 
   // build filter list
   build_filter_list();
+
+  // button click reset filters
+  $("#reset-filter").click(function(){
+    reset_filters();
+  });
 
   // scroll to top button
   var scroll_top_button = $("#scroll-top-btn");

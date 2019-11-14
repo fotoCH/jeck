@@ -65,6 +65,15 @@ div.photo-detail > div.text {
 }
 
 /* Search filters form */
+#searchform {
+  border: none;
+}
+
+#search-term {
+  border-radius: 4px;
+  border: 1px solid rgb(222, 222, 222) ! important;
+}
+
 div.filter-item {
   display: block;
   border: 1px solid #ddd;
@@ -83,6 +92,19 @@ div.filter-item input {
 
 div.ss-multi-selected {
   margin-bottom: 10px;
+}
+
+
+#reset-filter {
+  display: block;
+  border: none;
+  outline: none;
+  background-color: #a2a2a2;
+  color: white;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 12px;
 }
 
 
