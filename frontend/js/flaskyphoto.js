@@ -213,7 +213,9 @@ load_next_page = function(){
 
 reset_filters = function(){
   for (itm of slimselect_arr) {
-    itm.set([]);
+    if (itm.selected()){
+      itm.set([]);
+    }
   }
 };
 
