@@ -33,7 +33,13 @@ update_docs = function(data, clear=false) {
     var obj = tpl.clone();
     obj.find("span").each(function(){
       var datafield = $(this).attr("data-field");
-      $(this).html(item[datafield]);
+      var is_date = $(this).attr("data-moment");
+      if (is_date == "true"){
+        var formated_date = moment(item[datafield]).format('LL');
+        $(this).html(formated_date);
+      } else {
+        $(this).html(item[datafield]);
+      }
     });
     obj.find("a").attr("href", item.files[0]);
     $("#docarea").append(obj);
@@ -66,6 +72,10 @@ search_docs = function(){
 
 // main init function
 $(document).ready(function(){
+
+
+  // set moment.js locale to german
+  moment.locale("de");
 
   // search function handler
   $("#searchform").submit( function(evt){
