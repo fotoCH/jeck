@@ -11,17 +11,25 @@
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<link rel="stylesheet" href="css/ionicons.min.css">
 		<link rel="stylesheet" href="css/pace.css">
-	    <link rel="stylesheet" href="css/custom.css">
-			<link rel="stylesheet" href="css/flaskyphoto.css">
+	  <link rel="stylesheet" href="css/custom.css">
+
+ 		<link rel="stylesheet" href="css/flaskyphoto.css">
+
+		<script src="js/slimselect.min.js"></script>
+		<link href="css/slimselect.css" rel="stylesheet"></link>
 
 	    <!-- js -->
 	    <script src="js/jquery-2.1.3.min.js"></script>
 	    <script src="js/bootstrap.min.js"></script>
 	    <script src="js/pace.min.js"></script>
 	    <script src="js/modernizr.custom.js"></script>
+
+			<script src="js/flaskyphoto-docs.js"></script>
+
+
 	</head>
 
-	<body id="page">
+	<body>
 		<div class="container">
 			<header id="site-header">
 				<div class="row">
@@ -40,7 +48,7 @@
 
 							<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
   								<ul class="nav navbar-nav navbar-right">
-										<li class="cl-effect-11"><a href="index.html" data-hover="Fotos">Fotos</a></li>
+    								<li class="cl-effect-11"><a href="index.html" data-hover="Fotos">Fotos</a></li>
     								<li class="cl-effect-11"><a href="reportagen.html" data-hover="Reportagen">Reportagen</a></li>
 										<li class="cl-effect-11"><a href="about.html" data-hover="Info">Info</a></li>
     								<li class="cl-effect-11"><a href="contact.html" data-hover="Kontakt">Kontakt </a></li>
@@ -55,39 +63,37 @@
 		<div class="content-body">
 			<div class="container">
 				<div class="row">
-					<main class="col-md-12">
-						<h1 class="page-title">Jakob Hunziker – Fotos aus der Schweiz 1883-1895</h1>
-						<article class="post">
-							<div class="entry-content clearfix">
-								<p>
-									Mit der Idee, ausgehend von den Häusern und Haustypen mehr über deren Bewohner, ihre Sprache und ihre Lebensart zu erfahren, machte Jakob Hunziker zwischen 1883 und 1895 ausgedehnte Reisen in der Schweiz. Dabei führte er nicht nur Tagebuch, er fotografierte auch. Entstanden sind über 1000 Fotos, die heute im Staatsarchiv des Kantons Aargau aufbewahrt werden und auf eindrückliche Art und Weise eine ländliche Schweiz vor dem grossen Boom zeigen.
-								</p>
-								<figure class="img-responsive-center">
-									<img class="float-l-img" src="./info/h1.jpg" alt="Hunziker">
-									<img class="float-l-img" src="./info/h2.jpg" alt="Hunziker">
-									<img class="float-l-img" src="./info/h3.jpg" alt="Hunziker">
-									<img class="float-l-img" src="./info/h4.jpg" alt="Hunziker">
-									<div style="clear:both;"></div>
-								</figure>
 
 
-								<p>
-									Abzüge von Jakob Hunziker aus Wolfenschiessen, Dangio (mit napoleonischem Milizsoldat), Bosco Gurin und Risiegg bei Trubschachen.
-								</p>
+					<aside class="col-md-3">
+						<div class="widget widget-recent-posts">
+							<h3 class="widget-title">Volltextsuche</h3>
+							<form role="search" method="get" id="searchform" action="">
+								<input type="search" placeholder="Suche" id="search-term">
+							</form>
+						</div>
+						<div class="widget widget-recent-posts">
+							<button id="reset-filter">zurücksetzen</button><br /><br />
+							<br />Anzahl Resultate: <b id="search-result-count">1024</b>
+						</div>
+					</aside>
 
-								<p>
-									Mehr Infos über Jakob Hunziker filden Sie in folgendem <a href="./info/20160616_Hunziker_Konzeptskizze_s.pdf">PDF (4.1MB)</a>
-								</p>
 
+					<main class="col-md-9">
+						<article class="post post-1">
 
-								<div class="height-40px"></div>
+							<div class="entry-content clearfix" id="docarea">
 							</div>
+
 						</article>
+
 					</main>
+
 				</div>
 			</div>
 		</div>
 
+		<button id="scroll-top-btn" title="Nach oben scrollen">Zum Anfang</button>
 
 		<footer id="site-footer">
 			<div class="container">
@@ -110,6 +116,24 @@
 					<li><a href="contact.html">Kontakt</a></li>
 				</ul>
 			</nav>
+		</div>
+
+		<div id="elem-tpl-area">
+
+			<div class="text docs-detail-box">
+				<a href="" target="_blank"><big><b><span data-field="title">titel</b></big><br /></a>
+				<span data-field="magazine">magazin</span> vom <span data-field="date">datum</span> /
+				Nr. <span data-field="number">66</span> Seite(n): <span data-field="number">33</span>
+			</div>
+
+			<div class="filter-item-tpl">
+				<b class="filter-item-desc"></b>
+    		<select class="filter-item-select" multiple>
+    			<option class="filter-item-entry"></option>
+      	</select>
+			</div>
+
+
 		</div>
 
 		<script src="js/script.js"></script>

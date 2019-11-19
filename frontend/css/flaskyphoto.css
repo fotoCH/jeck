@@ -38,8 +38,10 @@ div.photo-detail > div.img > img {
   text-align: center;
   display: inline-block;
 }
+
+
 div.photo-detail > div.img > .img-nav {
-  width: 6.5%;
+  width: 30px;
   margin-top: 0px;
   min-height: 400px;
   cursor: pointer;
@@ -161,4 +163,46 @@ div.ss-multi-selected {
   height: 100%;
 	min-height: 750px;
 	margin-top: -50px;
+}
+
+
+
+
+
+.close {
+  position: relative;
+  right: 32px;
+  top: 0px;
+  width: 25px;
+  height: 25px;
+  opacity: 0.3;
+  z-index: 9999;
+}
+.close:hover {
+  opacity: 1;
+}
+.close:before, .close:after {
+  position: absolute;
+  left: 15px;
+  content: ' ';
+  height: 25px;
+  width: 2px;
+  background-color: #333;
+}
+.close:before {
+  transform: rotate(45deg);
+}
+.close:after {
+  transform: rotate(-45deg);
+}
+
+
+
+
+/* jeck docs */
+.docs-detail-box {
+  display: block;
+  margin-bottom: 15px;
+
+
 }

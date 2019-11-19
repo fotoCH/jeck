@@ -10,7 +10,6 @@ services:
       - ./backend/flaskyphoto:/app
       - ./frontend:/var/www/frontend
       - ./data/images:/var/www/images
-      - ./data/db.sql:/db.sql
       - ./files/nginx.conf:/app/nginx.conf
       - ./files/flaskyphoto.conf:/etc/nginx/conf.d/flaskyphoto.conf
     ports:
@@ -45,7 +44,7 @@ services:
       - ./data/db:/var/lib/mysql
       - ./files/my.cnf:/etc/mysql/my.cnf
     ports:
-      - "3306:3306"
+      - "3307:3306"
     restart: always
     env_file:
       - settings.env
